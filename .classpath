@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/javafx-sdk-11.0.2/lib/javafx-swt.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-cdense-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-cdense-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-core-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-core-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-ddense-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-ddense-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-dsparse-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-dsparse-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-experimental-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-experimental-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-fdense-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-fdense-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-simple-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-simple-0.40-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-zdense-0.40.jar"/>
+	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-zdense-0.40-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
