@@ -40,7 +40,7 @@ public class Main extends Application {
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		 
 		gc.setFill(Color.BLACK);
-        gc.setLineWidth(1.0);
+		gc.setLineWidth(1.0);
 		Path filePath = Paths.get(FILE);
 		faces = Loader.readObj(filePath.toString());
 		faces = Transformator.rotate(faces, 180);
@@ -56,13 +56,11 @@ public class Main extends Application {
 		for(int i=0;i<faces.getIndices().size();i++) {
 			int[] face = faces.getIndices().get(i);
 			gc.moveTo(vecs[face[0]].get(0), vecs[face[0]].get(1));
+			//vykreslovanie
 			gc.lineTo(vecs[face[1]].get(0), vecs[face[1]].get(1));
 			gc.lineTo(vecs[face[2]].get(0), vecs[face[2]].get(1));
 			gc.lineTo(vecs[face[0]].get(0), vecs[face[0]].get(1));
 			gc.stroke();
-			for(int j=0;j<2;j++) {
-				
-			}
 		}
 		
 		mainStage.setScene(new Scene(pane, 900, 900));
