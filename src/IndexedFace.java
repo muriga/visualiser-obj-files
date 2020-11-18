@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.javafx.geom.Vec4d;
+import org.ejml.simple.SimpleMatrix;
 
 public class IndexedFace {
-	private List<Vec4d> vecs = new ArrayList<Vec4d>();
+	private List<SimpleMatrix> vecs = new ArrayList<SimpleMatrix>();
 	private List<int[]> indices = new ArrayList<>();
 	private String name;
 	
-	public void addVec(Vec4d v) {
+	public void addVec(SimpleMatrix v) {
 		vecs.add(v);
 	}
 	
@@ -25,7 +25,7 @@ public class IndexedFace {
 		this.name = name;
 	}
 
-	public List<Vec4d> getVecs() {
+	public List<SimpleMatrix> getVecs() {
 		return vecs;
 	}
 
