@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -22,26 +23,37 @@ import sun.swing.FilePane;
 public class Main extends Application {
 	private Button load = new Button("Load");
 	private Button reset = new Button("Reset");
-	private final String FILE = "src/obj_files/bunny.obj";
+	private TextField file = new TextField("bunny.obj");
+	private final String PATH = "src/obj_files/";
 	@Override
 	public void start(Stage mainStage) {
 		mainStage.setTitle("Visualiser");
 		FlowPane pane = new FlowPane();
 		Canvas canvas = new Canvas(800,800);
 		NumberSpinner numSpinner = new NumberSpinner();
-		IndexedFace faces;
 		
 
 		pane.getChildren().add(canvas);
+		pane.getChildren().add(file);
 		pane.getChildren().add(load);
 		pane.getChildren().add(reset);
 		pane.getChildren().add(numSpinner);
+		load.setOnAction(e -> load(canvas, canvas.getGraphicsContext2D()));
 		
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-		 
+		
+		mainStage.setScene(new Scene(pane, 900, 900));
+		mainStage.show();
+	}
+	
+	private void load(Canvas canvas, GraphicsContext gc) {
+		IndexedFace faces;
+		
+
+		gc.beginPath();
+		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		gc.setFill(Color.BLACK);
 		gc.setLineWidth(1.0);
-		Path filePath = Paths.get(FILE);
+		Path filePath = Paths.get(PATH + file.getText());
 		faces = Loader.readObj(filePath.toString());
 		faces = Transformator.rotate(faces, 180);
 		faces = Transformator.scale(faces, canvas.getHeight()/4, canvas.getWidth()/4);
@@ -62,9 +74,6 @@ public class Main extends Application {
 			gc.lineTo(vecs[face[0]].get(0), vecs[face[0]].get(1));
 			gc.stroke();
 		}
-		
-		mainStage.setScene(new Scene(pane, 900, 900));
-		mainStage.show();
 	}
 	
 	public static void main(String[] args) {
