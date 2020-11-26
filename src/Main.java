@@ -29,6 +29,13 @@ public class Main extends Application {
 	private IndexedFace actualFaces;
 	private Canvas canvas;
 	private GraphicsContext gc;
+
+	private Button translateButton = new Button("Translate");
+	private Button rotateButton = new Button("Rotate");
+	private Button scaleButton = new Button("Scale");
+	private TextField[] translationVal = new TextField[3];
+	private TextField[] rotationVal = new TextField[3];
+	private TextField scalingVal = new TextField();
 	
 	@Override
 	public void start(Stage mainStage) {
@@ -44,7 +51,26 @@ public class Main extends Application {
 		pane.getChildren().add(file);
 		pane.getChildren().add(load);
 		pane.getChildren().add(reset);
-		pane.getChildren().add(numSpinner);
+		//pane.getChildren().add(numSpinner);
+		
+		for(int i=0; i < 3;i++) {
+			translationVal[i] = new TextField();
+			rotationVal[i] = new TextField();
+			translationVal[i].setMaxWidth(50);
+			rotationVal[i].setMaxWidth(50);
+			pane.getChildren().add(translationVal[i]);
+		}
+		pane.getChildren().add(translateButton);
+		for(int i=0; i < 3;i++) {
+			pane.getChildren().add(rotationVal[i]);
+		}
+		pane.getChildren().add(rotateButton);
+		pane.getChildren().add(scalingVal);
+		pane.getChildren().add(scaleButton);
+		
+		translateButton.setOnAction(e -> translate());
+		rotateButton.setOnAction(e -> rotate());
+		scaleButton.setOnAction(e -> scale());
 		load.setOnAction(e -> load());
 		reset.setOnAction(e -> reset());
 		
@@ -97,16 +123,35 @@ public class Main extends Application {
 	}
 	
 	private void translate() {
-		//treba spravit funkciu na vykreslovanie
-		//toto nech len zoberie tie fieldy kde su ulozene hodnoty ako ma posunut a zavola Transformator
+		//translate by Z?
+		double toX = Double.parseDouble(this.translationVal[0].getText());
+		double toY = Double.parseDouble(this.translationVal[1].getText());
+		double toZ = Double.parseDouble(this.translationVal[2].getText());
+		actualFaces = Transformator.translate(actualFaces, toX, toY);
+		this.draw();
 	}
 	
 	private void rotate() {
-		//zoberie hodnoty a zavola ich na Transformator
+		//rotate arround local or global?
+		double inRespectX = Double.parseDouble(this.rotationVal[0].getText());
+		double inRespectY = Double.parseDouble(this.rotationVal[1].getText());
+		double inRespectZ = Double.parseDouble(this.rotationVal[2].getText());
+		if (inRespectX != 0) {
+			actualFaces = Transformator.rotate(actualFaces, 'x', inRespectX);
+		}
+		else if (inRespectY != 0) {
+			actualFaces = Transformator.rotate(actualFaces, 'y', inRespectY);
+		}
+		else if (inRespectZ != 0) {
+			actualFaces = Transformator.rotate(actualFaces, 'z', inRespectZ);
+		}
+		this.draw();
 	}
 	
 	private void scale() {
-		//scale
+		double scalingFactor = Double.parseDouble(this.scalingVal.getText());
+		actualFaces = Transformator.scale(actualFaces, scalingFactor, scalingFactor);
+		this.draw();
 	}
 	
 	public static void main(String[] args) {
