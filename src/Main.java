@@ -25,6 +25,8 @@ public class Main extends Application {
 	private Button reset = new Button("Reset");
 	private TextField file = new TextField("bunny.obj");
 	private final String PATH = "src/obj_files/";
+	private IndexedFace loadedFaces;
+	
 	@Override
 	public void start(Stage mainStage) {
 		mainStage.setTitle("Visualiser");
@@ -39,10 +41,25 @@ public class Main extends Application {
 		pane.getChildren().add(reset);
 		pane.getChildren().add(numSpinner);
 		load.setOnAction(e -> load(canvas, canvas.getGraphicsContext2D()));
+		reset.setOnAction(e -> reset(canvas, canvas.getGraphicsContext2D()));
 		
 		
 		mainStage.setScene(new Scene(pane, 900, 900));
 		mainStage.show();
+	}
+	
+	private void reset(Canvas canvas, GraphicsContext gc) {
+		MyVec[] vecs = new MyVec[loadedFaces.getVecs().size()];
+		vecs = loadedFaces.getVecs().toArray(vecs);
+		for(int i=0;i<loadedFaces.getIndices().size();i++) {
+			int[] face = loadedFaces.getIndices().get(i);
+			gc.moveTo(vecs[face[0]].getX(), vecs[face[0]].getY());
+			//vykreslovanie
+			gc.lineTo(vecs[face[1]].getX(), vecs[face[1]].getY());
+			gc.lineTo(vecs[face[2]].getX(), vecs[face[2]].getY());
+			gc.lineTo(vecs[face[0]].getX(), vecs[face[0]].getY());
+			gc.stroke();
+		}
 	}
 	
 	private void load(Canvas canvas, GraphicsContext gc) {
@@ -55,25 +72,25 @@ public class Main extends Application {
 		gc.setLineWidth(1.0);
 		Path filePath = Paths.get(PATH + file.getText());
 		faces = Loader.readObj(filePath.toString());
-		faces = Transformator.rotate(faces, 180);
-		faces = Transformator.scale(faces, canvas.getHeight()/4, canvas.getWidth()/4);
-		SimpleMatrix[] vecs = new SimpleMatrix[faces.getVecs().size()];
-		vecs = faces.getVecs().toArray(vecs);
-
+		
+		
+		faces = Transformator.rotate(faces, 'z', Math.PI);
+		faces = Transformator.scale(faces, canvas.getHeight()/4, canvas.getWidth()/4);;
 		faces = Transformator.translate(faces, canvas.getHeight()/2, canvas.getWidth()/2);
-		vecs = new SimpleMatrix[faces.getVecs().size()];
+		MyVec[] vecs = new MyVec[faces.getVecs().size()];
 		vecs = faces.getVecs().toArray(vecs);
 
 		
 		for(int i=0;i<faces.getIndices().size();i++) {
 			int[] face = faces.getIndices().get(i);
-			gc.moveTo(vecs[face[0]].get(0), vecs[face[0]].get(1));
+			gc.moveTo(vecs[face[0]].getX(), vecs[face[0]].getY());
 			//vykreslovanie
-			gc.lineTo(vecs[face[1]].get(0), vecs[face[1]].get(1));
-			gc.lineTo(vecs[face[2]].get(0), vecs[face[2]].get(1));
-			gc.lineTo(vecs[face[0]].get(0), vecs[face[0]].get(1));
+			gc.lineTo(vecs[face[1]].getX(), vecs[face[1]].getY());
+			gc.lineTo(vecs[face[2]].getX(), vecs[face[2]].getY());
+			gc.lineTo(vecs[face[0]].getX(), vecs[face[0]].getY());
 			gc.stroke();
 		}
+		this.loadedFaces = faces.clone();
 	}
 	
 	public static void main(String[] args) {

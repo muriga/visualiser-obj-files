@@ -3,12 +3,21 @@ import java.util.List;
 
 import org.ejml.simple.SimpleMatrix;
 
-public class IndexedFace {
-	private List<SimpleMatrix> vecs = new ArrayList<SimpleMatrix>();
+public class IndexedFace implements Cloneable{
+	private List<MyVec> vecs = new ArrayList<MyVec>();
 	private List<int[]> indices = new ArrayList<>();
 	private String name;
 	
-	public void addVec(SimpleMatrix v) {
+	public IndexedFace clone() {
+		try {
+			return (IndexedFace) super.clone();
+		} catch (CloneNotSupportedException e) {
+			System.out.println("Cloning failed.");
+			return null;
+		}
+	}
+	
+	public void addVec(MyVec v) {
 		vecs.add(v);
 	}
 	
@@ -25,7 +34,7 @@ public class IndexedFace {
 		this.name = name;
 	}
 
-	public List<SimpleMatrix> getVecs() {
+	public List<MyVec> getVecs() {
 		return vecs;
 	}
 
