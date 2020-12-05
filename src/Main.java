@@ -1,10 +1,7 @@
 
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.ejml.simple.SimpleMatrix;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -15,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import sun.swing.FilePane;
 
 /**
  * @author Milos
@@ -43,7 +39,6 @@ public class Main extends Application {
 		FlowPane pane = new FlowPane();
 		canvas = new Canvas(800,800);
 		gc = canvas.getGraphicsContext2D();
-		NumberSpinner numSpinner = new NumberSpinner();
 		gc.setFill(Color.BLACK);
 		gc.setLineWidth(1.0);
 
@@ -51,7 +46,6 @@ public class Main extends Application {
 		pane.getChildren().add(file);
 		pane.getChildren().add(load);
 		pane.getChildren().add(reset);
-		//pane.getChildren().add(numSpinner);
 		
 		for(int i=0; i < 3;i++) {
 			translationVal[i] = new TextField();

@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ejml.simple.SimpleMatrix;
-
 public class IndexedFace implements Cloneable{
 	private List<MyVec> vecs = new ArrayList<MyVec>();
 	private List<int[]> indices = new ArrayList<>();

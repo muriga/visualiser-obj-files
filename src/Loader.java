@@ -1,8 +1,6 @@
 import java.io.File;
 import java.util.Scanner;
 
-import org.ejml.simple.SimpleMatrix;
-
 public class Loader {
 	public static IndexedFace readObj(String name) {
 		IndexedFace faces = new IndexedFace();

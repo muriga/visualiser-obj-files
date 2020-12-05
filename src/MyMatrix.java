@@ -26,8 +26,6 @@ public class MyMatrix {
 			}
 		}
 
-		//System.out.println("old: " + vector[0] + ", " + vector[1]);
-		//System.out.println("new: " + newVector[0] + ", " + newVector[1]);
 		return new MyVec(newVector);
 	}
 	
@@ -49,8 +47,6 @@ public class MyMatrix {
 				}
 			}
 		}
-		//System.out.println("old: " + this.matrix);
-		//System.out.println("new: " + newMatrix);
 		return new MyMatrix(newMatrix);
 	}
 }

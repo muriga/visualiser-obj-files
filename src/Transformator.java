@@ -1,6 +1,3 @@
-import org.ejml.simple.SimpleMatrix;
-
-
 public class Transformator {
 	
 	public static IndexedFace scale(IndexedFace faces, double scaleFactorX, double scaleFactorY) {
