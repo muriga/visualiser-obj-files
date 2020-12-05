@@ -1,9 +1,6 @@
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,119 +14,182 @@ import javafx.stage.Stage;
  * @author Milos
  */
 public class Main extends Application {
-	private Button load = new Button("Load");
-	private Button reset = new Button("Reset");
-	private TextField file = new TextField("bunny.obj");
+	private final int CANVAS_WIDTH = 800;
+	private final int CANVAS_HEIGHT = 800;
+	private final int SCENE_WIDTH = 900;
+	private final int SCENE_HEIGHT = 900;
+	private final int TEXTFIELD_WIDTH = 50;
+	private static final int AXIS_X = 0;
+	private static final int AXIS_Y = 1;
+	private static final int AXIS_Z = 2;
+	private static final int FIRST = 0;
+	private static final int SECOND = 1;
+	private static final int THIRD = 2;
+	private final Button load = new Button("Load");
+	private final Button reset = new Button("Reset");
+	private final TextField file = new TextField("icosphere.obj");
 	private final String PATH = "src/obj_files/";
+	private final Button translateButton = new Button("Translate");
+	private final Button rotateButton = new Button("Rotate");
+	private final Button scaleButton = new Button("Scale");
+	private final TextField[] translationVal = new TextField[3];
+	private final TextField[] rotationVal = new TextField[3];
+	private final TextField scalingVal = new TextField();
+	private final double LINE_WIDTH = 1.0;
+	
 	private IndexedFace loadedFaces;
 	private IndexedFace actualFaces;
 	private Canvas canvas;
-	private GraphicsContext gc;
+	private GraphicsContext graphicContext;
 
-	private Button translateButton = new Button("Translate");
-	private Button rotateButton = new Button("Rotate");
-	private Button scaleButton = new Button("Scale");
-	private TextField[] translationVal = new TextField[3];
-	private TextField[] rotationVal = new TextField[3];
-	private TextField scalingVal = new TextField();
 	
 	@Override
 	public void start(Stage mainStage) {
 		mainStage.setTitle("Visualiser");
-		FlowPane pane = new FlowPane();
-		canvas = new Canvas(800,800);
-		gc = canvas.getGraphicsContext2D();
-		gc.setFill(Color.BLACK);
-		gc.setLineWidth(1.0);
-
-		pane.getChildren().add(canvas);
-		pane.getChildren().add(file);
-		pane.getChildren().add(load);
-		pane.getChildren().add(reset);
+		intitializeCanvasAndContext();
+		FlowPane pane = intitializePane();
+		initializeTextFields();
+		addComponents(pane);
+		setButtons();
 		
+		mainStage.setScene(new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT));
+		mainStage.show();
+	}
+	
+	private void intitializeCanvasAndContext() {
+		canvas = new Canvas(CANVAS_WIDTH,CANVAS_HEIGHT);
+		graphicContext = canvas.getGraphicsContext2D();
+		graphicContext.setFill(Color.BLACK);
+		graphicContext.setLineWidth(LINE_WIDTH);
+		
+	}
+	
+	private void initializeTextFields() {
 		for(int i=0; i < 3;i++) {
 			translationVal[i] = new TextField();
 			rotationVal[i] = new TextField();
-			translationVal[i].setMaxWidth(50);
-			rotationVal[i].setMaxWidth(50);
-			pane.getChildren().add(translationVal[i]);
+			translationVal[i].setMaxWidth(TEXTFIELD_WIDTH);
+			rotationVal[i].setMaxWidth(TEXTFIELD_WIDTH);
 		}
-		pane.getChildren().add(translateButton);
+	}
+	
+	private FlowPane intitializePane() {
+		FlowPane pane = new FlowPane();
+		return pane;
+	}
+	
+	private void addComponents(FlowPane pane) {
+		ObservableList<Node> paneChildren = pane.getChildren();
+		addBasicFunctionality(paneChildren);
+		addTranslationCompononents(paneChildren);
+		addRotationComponents(paneChildren);
+		addScalingComponents(paneChildren);
+	}
+	
+	private void addBasicFunctionality(ObservableList<Node> paneChildren) {
+		paneChildren.add(canvas);
+		paneChildren.add(file);
+		paneChildren.add(load);
+		paneChildren.add(reset);
+	}
+	
+	private void addTranslationCompononents(ObservableList<Node> paneChildren) {
 		for(int i=0; i < 3;i++) {
-			pane.getChildren().add(rotationVal[i]);
+			paneChildren.add(translationVal[i]);
 		}
-		pane.getChildren().add(rotateButton);
-		pane.getChildren().add(scalingVal);
-		pane.getChildren().add(scaleButton);
-		
+		paneChildren.add(translateButton);
+	}
+	
+	private void addRotationComponents(ObservableList<Node> paneChildren) {
+		for(int i=0; i < 3;i++) {
+			paneChildren.add(rotationVal[i]);
+		}
+		paneChildren.add(rotateButton);
+	}
+	
+	private void addScalingComponents(ObservableList<Node> paneChildren) {
+		paneChildren.add(scalingVal);
+		paneChildren.add(scaleButton);
+	}
+
+	private void setButtons() {
 		translateButton.setOnAction(e -> translate());
 		rotateButton.setOnAction(e -> rotate());
 		scaleButton.setOnAction(e -> scale());
 		load.setOnAction(e -> load());
 		reset.setOnAction(e -> reset());
-		
-		
-		mainStage.setScene(new Scene(pane, 900, 900));
-		mainStage.show();
 	}
 	
 	private void reset() {
 		actualFaces = loadedFaces;
-		this.draw();
+		draw();
 		
 	}
 	
 	private void load() {
-
+		loadOBJ();
+		trasnformFacesToCanas();
+		draw();
+		storeFaces();
+	}
+	
+	private void loadOBJ() {
+		String filePath = PATH + file.getText();
+		actualFaces = Loader.readObj(filePath);
+	}
 		
-		Path filePath = Paths.get(PATH + file.getText());
-		actualFaces = Loader.readObj(filePath.toString());
-		
-		
+	private void trasnformFacesToCanas() {
 		actualFaces = Transformator.rotate(actualFaces, 'z', Math.PI);
 		actualFaces = Transformator.scale(actualFaces, canvas.getHeight()/4, canvas.getWidth()/4);;
 		actualFaces = Transformator.translate(actualFaces, canvas.getHeight()/2, canvas.getWidth()/2);
-		MyVec[] vecs = new MyVec[actualFaces.getVecs().size()];
-		vecs = actualFaces.getVecs().toArray(vecs);
-
-		
-		this.draw();
-		
-		this.loadedFaces = actualFaces.clone();
+	}
+	
+	private void storeFaces() {
+		loadedFaces = actualFaces.clone();
 	}
 	
 	private void draw() {
-		MyVec[] vecs = new MyVec[actualFaces.getVecs().size()];
-		vecs = actualFaces.getVecs().toArray(vecs);
+		MyVec[] vecs = getVecsArray();
 
-		gc.beginPath();
-		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		
-		for(int i=0;i<actualFaces.getIndices().size();i++) {
+		graphicContext.beginPath();
+		graphicContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		int actualFaceIndicesAmount = actualFaces.getIndices().size();
+		for(int i=0;i<actualFaceIndicesAmount;i++) {
 			int[] face = actualFaces.getIndices().get(i);
-			gc.moveTo(vecs[face[0]].getX(), vecs[face[0]].getY());
-			//vykreslovanie
-			gc.lineTo(vecs[face[1]].getX(), vecs[face[1]].getY());
-			gc.lineTo(vecs[face[2]].getX(), vecs[face[2]].getY());
-			gc.lineTo(vecs[face[0]].getX(), vecs[face[0]].getY());
-			gc.stroke();
+			drawTriangel(face, vecs);
+			graphicContext.stroke();
 		}
+	}
+	
+	private MyVec[] getVecsArray() {
+		MyVec[] vecs = new MyVec[actualFaces.getVecs().size()];
+		return vecs = actualFaces.getVecs().toArray(vecs);
+	}
+	
+	private void drawTriangel(int[] face, MyVec[] vecs) {
+		MyVec firstNode = vecs[face[FIRST]];
+		MyVec secondNode = vecs[face[SECOND]];
+		MyVec thirdNode = vecs[face[THIRD]];
+		graphicContext.moveTo(firstNode.getX(), firstNode.getY());
+		graphicContext.lineTo(secondNode.getX(), secondNode.getY());
+		graphicContext.lineTo(thirdNode.getX(), thirdNode.getY());
+		graphicContext.lineTo(firstNode.getX(), firstNode.getY());
 	}
 	
 	private void translate() {
 		//translate by Z?
-		double toX = Double.parseDouble(this.translationVal[0].getText());
-		double toY = Double.parseDouble(this.translationVal[1].getText());
-		double toZ = Double.parseDouble(this.translationVal[2].getText());
+		double toX = Double.parseDouble(this.translationVal[AXIS_X].getText());
+		double toY = Double.parseDouble(this.translationVal[AXIS_Y].getText());
+		double toZ = Double.parseDouble(this.translationVal[AXIS_Z].getText()); //this will be used in the future
 		actualFaces = Transformator.translate(actualFaces, toX, toY);
 		this.draw();
 	}
 	
 	private void rotate() {
 		//rotate arround local or global?
-		double inRespectX = Double.parseDouble(this.rotationVal[0].getText());
-		double inRespectY = Double.parseDouble(this.rotationVal[1].getText());
-		double inRespectZ = Double.parseDouble(this.rotationVal[2].getText());
+		double inRespectX = Double.parseDouble(this.rotationVal[AXIS_X].getText());
+		double inRespectY = Double.parseDouble(this.rotationVal[AXIS_Y].getText());
+		double inRespectZ = Double.parseDouble(this.rotationVal[AXIS_Z].getText());
 		if (inRespectX != 0) {
 			actualFaces = Transformator.rotate(actualFaces, 'x', inRespectX);
 		}
