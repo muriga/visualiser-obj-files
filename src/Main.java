@@ -1,3 +1,5 @@
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -51,7 +53,6 @@ public class Main extends Application {
 		initializeTextFields();
 		addComponents(pane);
 		setButtons();
-		
 		mainStage.setScene(new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT));
 		mainStage.show();
 	}
@@ -191,13 +192,13 @@ public class Main extends Application {
 		double inRespectY = Double.parseDouble(this.rotationVal[AXIS_Y].getText());
 		double inRespectZ = Double.parseDouble(this.rotationVal[AXIS_Z].getText());
 		if (inRespectX != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'x', inRespectX);
+			actualFaces = Transformator.rotate(actualFaces, 'x', inRespectX * Math.PI);
 		}
 		else if (inRespectY != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'y', inRespectY);
+			actualFaces = Transformator.rotate(actualFaces, 'y', inRespectY * Math.PI);
 		}
 		else if (inRespectZ != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'z', inRespectZ);
+			actualFaces = Transformator.rotate(actualFaces, 'z', inRespectZ * Math.PI);
 		}
 		this.draw();
 	}

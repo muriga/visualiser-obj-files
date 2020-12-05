@@ -1,8 +1,6 @@
 public class Transformator {
 	
 	public static IndexedFace scale(IndexedFace faces, double scaleFactorX, double scaleFactorY) {
-		double[] translation = faces.getTranslation();
-		faces = Transformator.translate(faces, translation[0] * -1, translation[1] * -1);
 		MyVec[] oldVectors = new MyVec[faces.getVecs().size()];
 		oldVectors = faces.getVecs().toArray(oldVectors);
 		
@@ -23,7 +21,6 @@ public class Transformator {
 			newFace.addVec(newVec);
 		}
 		
-		newFace = Transformator.translate(newFace, translation[0], translation[1]);
 		return newFace;
 	}
 	
@@ -86,6 +83,8 @@ public class Transformator {
 	}
 	
 	public static IndexedFace rotate(IndexedFace faces, char axis, double radians) {
+		double[] translation = faces.getTranslation();
+		faces = Transformator.translate(faces, translation[0] * -1, translation[1] * -1);
 		
 		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
 		
@@ -100,7 +99,8 @@ public class Transformator {
 			MyVec newVec = rotationMatrix.multiply(oldVectors[i]);
 			newFace.addVec(newVec);
 		}
-		
+
+		newFace = Transformator.translate(newFace, translation[0], translation[1]);
 		return newFace;
 	}
 }
