@@ -55,6 +55,21 @@ public class Main extends Application {
 		setButtons();
 		mainStage.setScene(new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT));
 		mainStage.show();
+		
+		//MyVec vector = new MyVec(4, 3, 2, 0);
+		//System.out.println(Transformator.scale(vector, 2, 2, 2).toString());
+		//System.out.println(Transformator.rotate(vector, 'x', 0.5*Math.PI));
+		//System.out.println(Transformator.rotate(vector, 'y', 0.5*Math.PI));
+		//System.out.println(Transformator.rotate(vector, 'z', 0.5*Math.PI));
+		MyMatrix matrix = new MyMatrix(
+						new double[][] {
+							new double[] {1,0,0,0},
+							new double[] {0,1,0,0},
+							new double[] {0,0,1,0},
+							new double[] {0,0,0,1}
+						});
+		System.out.println(Transformator.scale(matrix, 2, 2, 2) + "\n");
+		System.out.println(Transformator.translate(matrix, 3, 3));
 	}
 	
 	private void intitializeCanvasAndContext() {
@@ -141,7 +156,7 @@ public class Main extends Application {
 		
 	private void trasnformFacesToCanas() {
 		actualFaces = Transformator.rotate(actualFaces, 'z', Math.PI);
-		actualFaces = Transformator.scale(actualFaces, canvas.getHeight()/4, canvas.getWidth()/4);;
+		actualFaces = Transformator.scale(actualFaces, canvas.getHeight()/4, canvas.getWidth()/4, canvas.getWidth()/4);;
 		actualFaces = Transformator.translate(actualFaces, canvas.getHeight()/2, canvas.getWidth()/2);
 	}
 	
@@ -205,7 +220,7 @@ public class Main extends Application {
 	
 	private void scale() {
 		double scalingFactor = Double.parseDouble(this.scalingVal.getText());
-		actualFaces = Transformator.scale(actualFaces, scalingFactor, scalingFactor);
+		actualFaces = Transformator.scale(actualFaces, scalingFactor, scalingFactor, scalingFactor);
 		this.draw();
 	}
 	

@@ -1,6 +1,6 @@
 public class Transformator {
 	
-	public static IndexedFace scale(IndexedFace faces, double scaleFactorX, double scaleFactorY) {
+	public static IndexedFace scale(IndexedFace faces, double scaleFactorX, double scaleFactorY, double scaleFactorZ) {
 		MyVec[] oldVectors = new MyVec[faces.getVecs().size()];
 		oldVectors = faces.getVecs().toArray(oldVectors);
 		
@@ -12,7 +12,7 @@ public class Transformator {
 				new double [][] {
 					new double[] {scaleFactorX,0,0,0},
 					new double[] {0,scaleFactorY,0,0},
-					new double[] {0,0,1,0},
+					new double[] {0,0,scaleFactorZ,0},
 					new double[] {0,0,0,1}
 				});
 		
@@ -22,6 +22,30 @@ public class Transformator {
 		}
 		
 		return newFace;
+	}
+
+	public static MyMatrix scale(MyMatrix matrix, double scaleFactorX, double scaleFactorY, double scaleFactorZ) {
+		MyMatrix scalingMatrix = new MyMatrix(
+				new double [][] {
+					new double[] {scaleFactorX,0,0,0},
+					new double[] {0,scaleFactorY,0,0},
+					new double[] {0,0,scaleFactorZ,0},
+					new double[] {0,0,0,1}
+				});
+		
+		return scalingMatrix.multiply(matrix);
+	}
+	
+	public static MyVec scale(MyVec vector, double scaleFactorX, double scaleFactorY, double scaleFactorZ) {
+		MyMatrix scalingMatrix = new MyMatrix(
+				new double [][] {
+					new double[] {scaleFactorX,0,0,0},
+					new double[] {0,scaleFactorY,0,0},
+					new double[] {0,0,scaleFactorZ,0},
+					new double[] {0,0,0,1}
+				});
+		
+		return scalingMatrix.multiply(vector);
 	}
 	
 	public static IndexedFace translate(IndexedFace faces, double directionX, double directionY) {
@@ -47,6 +71,28 @@ public class Transformator {
 		}
 		
 		return newFace;
+	}
+
+	public static MyMatrix translate(MyMatrix matrix, double directionX, double directionY) {
+		MyMatrix translatingMatrix = new MyMatrix(
+				new double[][] {
+					new double[] {1,0,0,directionX},
+					new double[] {0,1,0,directionY},
+					new double[] {0,0,1,0},
+					new double[] {0,0,0,1}
+				});
+		return translatingMatrix.multiply(matrix);
+	}
+
+	public static MyVec translate(MyVec vector, double directionX, double directionY) {
+		MyMatrix translatingMatrix = new MyMatrix(
+				new double[][] {
+					new double[] {1,0,0,directionX},
+					new double[] {0,1,0,directionY},
+					new double[] {0,0,1,0},
+					new double[] {0,0,0,1}
+				});
+		return translatingMatrix.multiply(vector);
 	}
 	
 	private static MyMatrix getRotationMatrix(char axis, double radians) {
@@ -102,5 +148,17 @@ public class Transformator {
 
 		newFace = Transformator.translate(newFace, translation[0], translation[1]);
 		return newFace;
+	}
+	
+	public static MyMatrix rotate(MyMatrix matrix, char axis, double radians) {
+		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
+		return rotationMatrix.multiply(matrix);
+	}
+	
+	public static MyVec rotate(MyVec vector, char axis, double radians) {
+		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
+		System.out.println("This is rotation matrix in respect " + axis );
+		System.out.println(rotationMatrix);
+		return rotationMatrix.multiply(vector);
 	}
 }

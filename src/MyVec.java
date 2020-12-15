@@ -19,6 +19,10 @@ public class MyVec {
 		this.w = array[3];
 	}
 	
+	public String toString() {
+		return x + " " + y + " " + " " + z;
+	}
+	
 	public double[] getVector() {
 		double [] array = {this.x, this.y, this.z, this.w};
 		return array;
