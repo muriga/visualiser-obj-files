@@ -1,5 +1,3 @@
-import java.util.List;
-
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -56,19 +54,6 @@ public class Main extends Application {
 		setButtons();
 		mainStage.setScene(new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT));
 		mainStage.show();
-		
-		//MyVec vector = new MyVec(4, 3, 2, 0);
-		//System.out.println(Transformator.scale(vector, 2, 2, 2).toString());
-		//System.out.println(Transformator.rotate(vector, 'x', 0.5*Math.PI));
-		//System.out.println(Transformator.rotate(vector, 'y', 0.5*Math.PI));
-		//System.out.println(Transformator.rotate(vector, 'z', 0.5*Math.PI));
-		MyMatrix matrix = new MyMatrix(
-						new double[][] {
-							new double[] {1,0,0,0},
-							new double[] {0,1,0,0},
-							new double[] {0,0,1,0},
-							new double[] {0,0,0,1}
-						});
 	}
 	
 	private void initializeTransformationMatrix() {
@@ -159,6 +144,7 @@ public class Main extends Application {
 	
 	private void load() {
 		loadOBJ();
+		initializeTransformationMatrix();
 		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		draw();
 	}
@@ -169,12 +155,14 @@ public class Main extends Application {
 	}
 	
 	private void draw() {
+		System.out.println(transformatioMatrix);
 		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
+		
 		MyVec[] vecs = getVecsArray();
-		System.out.println(transformatioMatrix + "\n");
+		int actualFaceIndicesAmount = actualFaces.getIndices().size();
+		
 		graphicContext.beginPath();
 		graphicContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		int actualFaceIndicesAmount = actualFaces.getIndices().size();
 		for(int i=0;i<actualFaceIndicesAmount;i++) {
 			int[] face = actualFaces.getIndices().get(i);
 			drawTriangel(face, vecs);
@@ -191,7 +179,6 @@ public class Main extends Application {
 		MyVec firstNode = vecs[face[FIRST]];
 		MyVec secondNode = vecs[face[SECOND]];
 		MyVec thirdNode = vecs[face[THIRD]];
-		//System.out.println(firstNode.getX() + " " + firstNode.getY());
 		graphicContext.moveTo(firstNode.getX(), firstNode.getY());
 		graphicContext.lineTo(secondNode.getX(), secondNode.getY());
 		graphicContext.lineTo(thirdNode.getX(), thirdNode.getY());
@@ -199,19 +186,18 @@ public class Main extends Application {
 	}
 	
 	private void translate() {
-		//translate by Z?
-		double toX = Double.parseDouble(this.translationVal[AXIS_X].getText());
-		double toY = Double.parseDouble(this.translationVal[AXIS_Y].getText());
-		double toZ = Double.parseDouble(this.translationVal[AXIS_Z].getText()); //this will be used in the future
+		double toX = getDouble(this.translationVal[AXIS_X]);
+		double toY = getDouble(this.translationVal[AXIS_Y]);
+		double toZ = getDouble(this.translationVal[AXIS_Z]); //this will be used in the future
 		transformatioMatrix = Transformator.translate(transformatioMatrix, toX, toY);
 		this.draw();
 	}
 	
 	private void rotate() {
-		//rotate arround local or global?
-		double inRespectX = Double.parseDouble(this.rotationVal[AXIS_X].getText());
-		double inRespectY = Double.parseDouble(this.rotationVal[AXIS_Y].getText());
-		double inRespectZ = Double.parseDouble(this.rotationVal[AXIS_Z].getText());
+		//rotate arround local coordinates
+		double inRespectX = getDouble(this.rotationVal[AXIS_X]);
+		double inRespectY = getDouble(this.rotationVal[AXIS_Y]);
+		double inRespectZ = getDouble(this.rotationVal[AXIS_Z]);
 		if (inRespectX != 0) {
 			transformatioMatrix = Transformator.rotate(transformatioMatrix, 'x', inRespectX * Math.PI);
 		}
@@ -225,9 +211,19 @@ public class Main extends Application {
 	}
 	
 	private void scale() {
-		double scalingFactor = Double.parseDouble(this.scalingVal.getText());
+		double scalingFactor = getDouble(this.scalingVal);
 		transformatioMatrix = Transformator.scale(transformatioMatrix, scalingFactor, scalingFactor, scalingFactor);
 		this.draw();
+	}
+	
+	private double getDouble(TextField field) {
+		double value;
+		try {
+			value = Double.parseDouble(field.getText());
+		} catch (Exception e) {
+			value = 0;
+		}
+		return value;
 	}
 	
 	public static void main(String[] args) {

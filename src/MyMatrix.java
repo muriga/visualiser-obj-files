@@ -23,9 +23,6 @@ public class MyMatrix {
 		int m = this.matrix[0].length;
 		int n = this.matrix.length;
 		double [] newVector = new double[m];
-		//if (m != vector.length) {
-		//	throw new Exception("You cant multiply matrix and vector with this size");
-		//}
 		for (int i=0; i < m;i++) {
 			newVector[i] = 0;
 			for(int j=0; j<n;j++) {
@@ -38,32 +35,16 @@ public class MyMatrix {
 	
 	public MyMatrix multiply(MyMatrix otherMyMatrix) {
 		double [][] otherMatrix = otherMyMatrix.getMatrix();
-		//System.out.println("Multiply:");
-		//System.out.println(this);
-		//System.out.println();
-		//System.out.println(otherMyMatrix);
 		int m = this.matrix[0].length;
 		int n = this.matrix.length;
 		double [][] newMatrix = new double[m][n];
-		//if (m != otherMatrix.length) {
-		//	throw new Exception("You cant multiply matrices with this size");
-		//}
 		for (int i=0; i < m;i++) {
 			for(int j=0; j<n;j++) {
 				newMatrix[i][j] = 0;
 				for(int k=0; k<m;k++)
-				{
-					try {
-						newMatrix[i][j] += this.matrix[i][k] * otherMatrix[k][j];
-					} catch (Exception e) {
-						System.out.println(i + " " + j + " " + k);
-					}
-					
-				}
+					newMatrix[i][j] += this.matrix[i][k] * otherMatrix[k][j];
 			}
 		}
-		//System.out.println("Result:");
-		//System.out.println(new MyMatrix(newMatrix));
 		return new MyMatrix(newMatrix);
 	}
 }

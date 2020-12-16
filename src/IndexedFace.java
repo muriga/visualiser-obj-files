@@ -5,16 +5,6 @@ public class IndexedFace implements Cloneable{
 	private List<MyVec> vecs = new ArrayList<MyVec>();
 	private List<int[]> indices = new ArrayList<>();
 	private String name;
-	private double[] translation = {0,0};
-	
-	public IndexedFace clone() {
-		try {
-			return (IndexedFace) super.clone();
-		} catch (CloneNotSupportedException e) {
-			System.out.println("Cloning failed.");
-			return null;
-		}
-	}
 	
 	public void addVec(MyVec v) {
 		vecs.add(v);
@@ -43,20 +33,6 @@ public class IndexedFace implements Cloneable{
 
 	public String getName() {
 		return name;
-	}
-	
-	public void actualizeTranslation(IndexedFace oldFace, double x, double y) {
-		translate(x + oldFace.translation[0], y + oldFace.translation[1]);
-	}
-	
-	private void translate(double x, double y) {
-
-		translation[0] += x;
-		translation[1] += y;
-	}
-	
-	public double[] getTranslation() {
-		return translation;
 	}
 	
 }
