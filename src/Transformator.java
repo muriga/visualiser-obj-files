@@ -129,8 +129,8 @@ public class Transformator {
 	}
 	
 	public static IndexedFace rotate(IndexedFace faces, char axis, double radians) {
-		double[] translation = faces.getTranslation();
-		faces = Transformator.translate(faces, translation[0] * -1, translation[1] * -1);
+		//double[] translation = faces.getTranslation();
+		//faces = Transformator.translate(faces, translation[0] * -1, translation[1] * -1);
 		
 		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
 		
@@ -146,19 +146,39 @@ public class Transformator {
 			newFace.addVec(newVec);
 		}
 
-		newFace = Transformator.translate(newFace, translation[0], translation[1]);
+		//newFace = Transformator.translate(newFace, translation[0], translation[1]);
 		return newFace;
 	}
 	
 	public static MyMatrix rotate(MyMatrix matrix, char axis, double radians) {
+		double[][] matrix_double = matrix.getMatrix();
+		double[] translation = {matrix_double[0][3], matrix_double[1][3], matrix_double[2][3]};
+		if(translation[0] != 0 || translation[1] != 0)
+			matrix = Transformator.translate(matrix, -translation[0], -translation[1]);
 		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
-		return rotationMatrix.multiply(matrix);
+		matrix = rotationMatrix.multiply(matrix);
+		if(translation[0] != 0 || translation[1] != 0)
+			matrix = Transformator.translate(matrix, translation[0], translation[1]);
+		return matrix;
 	}
 	
 	public static MyVec rotate(MyVec vector, char axis, double radians) {
 		MyMatrix rotationMatrix = Transformator.getRotationMatrix(axis, radians);
-		System.out.println("This is rotation matrix in respect " + axis );
-		System.out.println(rotationMatrix);
 		return rotationMatrix.multiply(vector);
+	}
+	
+	public static IndexedFace transform(IndexedFace faces, MyMatrix matrix) {
+		MyVec[] oldVectors = new MyVec[faces.getVecs().size()];
+		oldVectors = faces.getVecs().toArray(oldVectors);
+		
+		IndexedFace newFace = new IndexedFace();
+		newFace.addFace(faces.getIndices());
+		newFace.setName(faces.getName());
+		
+		for(int i=0;i<faces.getVecs().size();i++) {
+			MyVec newVec = matrix.multiply(oldVectors[i]);
+			newFace.addVec(newVec);
+		}
+		return newFace;
 	}
 }

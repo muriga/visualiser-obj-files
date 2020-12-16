@@ -38,6 +38,10 @@ public class MyMatrix {
 	
 	public MyMatrix multiply(MyMatrix otherMyMatrix) {
 		double [][] otherMatrix = otherMyMatrix.getMatrix();
+		//System.out.println("Multiply:");
+		//System.out.println(this);
+		//System.out.println();
+		//System.out.println(otherMyMatrix);
 		int m = this.matrix[0].length;
 		int n = this.matrix.length;
 		double [][] newMatrix = new double[m][n];
@@ -58,6 +62,8 @@ public class MyMatrix {
 				}
 			}
 		}
+		//System.out.println("Result:");
+		//System.out.println(new MyMatrix(newMatrix));
 		return new MyMatrix(newMatrix);
 	}
 }

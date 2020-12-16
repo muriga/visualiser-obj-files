@@ -39,16 +39,17 @@ public class Main extends Application {
 	private final TextField scalingVal = new TextField();
 	private final double LINE_WIDTH = 1.0;
 	
-	private IndexedFace loadedFaces;
 	private IndexedFace actualFaces;
+	private IndexedFace loadedFaces;
 	private Canvas canvas;
 	private GraphicsContext graphicContext;
-
+	private MyMatrix transformatioMatrix;
 	
 	@Override
 	public void start(Stage mainStage) {
 		mainStage.setTitle("Visualiser");
 		intitializeCanvasAndContext();
+		initializeTransformationMatrix();
 		FlowPane pane = intitializePane();
 		initializeTextFields();
 		addComponents(pane);
@@ -68,8 +69,21 @@ public class Main extends Application {
 							new double[] {0,0,1,0},
 							new double[] {0,0,0,1}
 						});
-		System.out.println(Transformator.scale(matrix, 2, 2, 2) + "\n");
-		System.out.println(Transformator.translate(matrix, 3, 3));
+	}
+	
+	private void initializeTransformationMatrix() {
+		transformatioMatrix = new MyMatrix(
+				new double[][] {
+					new double[] {1,0,0,0},
+					new double[] {0,1,0,0},
+					new double[] {0,0,1,0},
+					new double[] {0,0,0,1}
+				});
+		
+
+		transformatioMatrix = Transformator.rotate(transformatioMatrix, 'z', Math.PI);
+		transformatioMatrix = Transformator.scale(transformatioMatrix, canvas.getHeight()/4, canvas.getWidth()/4, canvas.getWidth()/4);;
+		transformatioMatrix = Transformator.translate(transformatioMatrix, canvas.getHeight()/2, canvas.getWidth()/2);
 	}
 	
 	private void intitializeCanvasAndContext() {
@@ -137,36 +151,27 @@ public class Main extends Application {
 	}
 	
 	private void reset() {
-		actualFaces = loadedFaces;
+		initializeTransformationMatrix();
+		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		draw();
 		
 	}
 	
 	private void load() {
 		loadOBJ();
-		trasnformFacesToCanas();
+		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		draw();
-		storeFaces();
 	}
 	
 	private void loadOBJ() {
 		String filePath = PATH + file.getText();
-		actualFaces = Loader.readObj(filePath);
-	}
-		
-	private void trasnformFacesToCanas() {
-		actualFaces = Transformator.rotate(actualFaces, 'z', Math.PI);
-		actualFaces = Transformator.scale(actualFaces, canvas.getHeight()/4, canvas.getWidth()/4, canvas.getWidth()/4);;
-		actualFaces = Transformator.translate(actualFaces, canvas.getHeight()/2, canvas.getWidth()/2);
-	}
-	
-	private void storeFaces() {
-		loadedFaces = actualFaces.clone();
+		loadedFaces = Loader.readObj(filePath);
 	}
 	
 	private void draw() {
+		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		MyVec[] vecs = getVecsArray();
-
+		System.out.println(transformatioMatrix + "\n");
 		graphicContext.beginPath();
 		graphicContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		int actualFaceIndicesAmount = actualFaces.getIndices().size();
@@ -186,6 +191,7 @@ public class Main extends Application {
 		MyVec firstNode = vecs[face[FIRST]];
 		MyVec secondNode = vecs[face[SECOND]];
 		MyVec thirdNode = vecs[face[THIRD]];
+		//System.out.println(firstNode.getX() + " " + firstNode.getY());
 		graphicContext.moveTo(firstNode.getX(), firstNode.getY());
 		graphicContext.lineTo(secondNode.getX(), secondNode.getY());
 		graphicContext.lineTo(thirdNode.getX(), thirdNode.getY());
@@ -197,7 +203,7 @@ public class Main extends Application {
 		double toX = Double.parseDouble(this.translationVal[AXIS_X].getText());
 		double toY = Double.parseDouble(this.translationVal[AXIS_Y].getText());
 		double toZ = Double.parseDouble(this.translationVal[AXIS_Z].getText()); //this will be used in the future
-		actualFaces = Transformator.translate(actualFaces, toX, toY);
+		transformatioMatrix = Transformator.translate(transformatioMatrix, toX, toY);
 		this.draw();
 	}
 	
@@ -207,20 +213,20 @@ public class Main extends Application {
 		double inRespectY = Double.parseDouble(this.rotationVal[AXIS_Y].getText());
 		double inRespectZ = Double.parseDouble(this.rotationVal[AXIS_Z].getText());
 		if (inRespectX != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'x', inRespectX * Math.PI);
+			transformatioMatrix = Transformator.rotate(transformatioMatrix, 'x', inRespectX * Math.PI);
 		}
-		else if (inRespectY != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'y', inRespectY * Math.PI);
+		if (inRespectY != 0) {
+			transformatioMatrix = Transformator.rotate(transformatioMatrix, 'y', inRespectY * Math.PI);
 		}
-		else if (inRespectZ != 0) {
-			actualFaces = Transformator.rotate(actualFaces, 'z', inRespectZ * Math.PI);
+		if (inRespectZ != 0) {
+			transformatioMatrix = Transformator.rotate(transformatioMatrix, 'z', inRespectZ * Math.PI);
 		}
 		this.draw();
 	}
 	
 	private void scale() {
 		double scalingFactor = Double.parseDouble(this.scalingVal.getText());
-		actualFaces = Transformator.scale(actualFaces, scalingFactor, scalingFactor, scalingFactor);
+		transformatioMatrix = Transformator.scale(transformatioMatrix, scalingFactor, scalingFactor, scalingFactor);
 		this.draw();
 	}
 	
