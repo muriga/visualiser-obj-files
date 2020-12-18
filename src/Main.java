@@ -67,6 +67,7 @@ public class Main extends Application {
 		
 
 		transformatioMatrix = Transformator.rotate(transformatioMatrix, 'z', Math.PI);
+		transformatioMatrix = Transformator.rotate(transformatioMatrix, 'y', Math.PI);
 		transformatioMatrix = Transformator.scale(transformatioMatrix, canvas.getHeight()/4, canvas.getWidth()/4, canvas.getWidth()/4);;
 		transformatioMatrix = Transformator.translate(transformatioMatrix, canvas.getHeight()/2, canvas.getWidth()/2);
 	}
