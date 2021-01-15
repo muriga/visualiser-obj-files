@@ -37,7 +37,6 @@ public class Main extends Application {
 	private final TextField scalingVal = new TextField();
 	private final double LINE_WIDTH = 1.0;
 	
-	private IndexedFace actualFaces;
 	private IndexedFace loadedFaces;
 	private Canvas canvas;
 	private GraphicsContext graphicContext;
@@ -138,7 +137,6 @@ public class Main extends Application {
 	
 	private void reset() {
 		initializeTransformationMatrix();
-		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		draw();
 		
 	}
@@ -146,7 +144,6 @@ public class Main extends Application {
 	private void load() {
 		loadOBJ();
 		initializeTransformationMatrix();
-		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		draw();
 	}
 	
@@ -157,9 +154,9 @@ public class Main extends Application {
 	
 	private void draw() {
 		System.out.println(transformatioMatrix);
-		actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
+		IndexedFace actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		
-		MyVec[] vecs = getVecsArray();
+		MyVec[] vecs = getVecsArray(actualFaces);
 		int actualFaceIndicesAmount = actualFaces.getIndices().size();
 		
 		graphicContext.beginPath();
@@ -171,7 +168,7 @@ public class Main extends Application {
 		}
 	}
 	
-	private MyVec[] getVecsArray() {
+	private MyVec[] getVecsArray(IndexedFace actualFaces) {
 		MyVec[] vecs = new MyVec[actualFaces.getVecs().size()];
 		return vecs = actualFaces.getVecs().toArray(vecs);
 	}
