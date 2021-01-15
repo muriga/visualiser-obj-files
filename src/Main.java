@@ -36,6 +36,7 @@ public class Main extends Application {
 	private final TextField[] rotationVal = new TextField[3];
 	private final TextField scalingVal = new TextField();
 	private final double LINE_WIDTH = 1.0;
+	private final MyVec VIEW = new MyVec(0,0,-1,0);
 	
 	private IndexedFace loadedFaces;
 	private Canvas canvas;
@@ -163,14 +164,25 @@ public class Main extends Application {
 		graphicContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		for(int i=0;i<actualFaceIndicesAmount;i++) {
 			int[] face = actualFaces.getIndices().get(i);
-			drawTriangel(face, vecs);
-			graphicContext.stroke();
+			if(isVisible(face, vecs)) {
+				drawTriangel(face, vecs);
+				graphicContext.stroke();
+			}
 		}
 	}
 	
 	private MyVec[] getVecsArray(IndexedFace actualFaces) {
 		MyVec[] vecs = new MyVec[actualFaces.getVecs().size()];
 		return vecs = actualFaces.getVecs().toArray(vecs);
+	}
+	
+	private boolean isVisible(int[] face, MyVec[] vecs) {
+		MyVec v0 = vecs[face[SECOND]].minus(vecs[face[FIRST]]);
+		MyVec v1 = vecs[face[THIRD]].minus(vecs[face[SECOND]]);
+		MyVec normal = v0.cross(v1);
+		if(VIEW.dot(normal) > 0)
+				return true;
+		return false;
 	}
 	
 	private void drawTriangel(int[] face, MyVec[] vecs) {
