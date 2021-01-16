@@ -52,6 +52,7 @@ public class Main extends Application {
 	private final Button changeMaterial = new Button("Change material");
 	private final double LINE_WIDTH = 1.0;
 	private final MyVec VIEW = new MyVec(0,0,-1,0);
+	private final Button changeLightingModel = new Button("Change to Phong");
 	
 	private IndexedFace loadedFaces;
 	private Canvas canvas;
@@ -128,6 +129,7 @@ public class Main extends Application {
 		addScalingComponents(paneChildren);
 		addLightingComponents(paneChildren);
 		addMaterialComponents(paneChildren);
+		paneChildren.add(changeLightingModel);
 	}
 	
 	private void addBasicFunctionality(ObservableList<Node> paneChildren) {
@@ -183,6 +185,7 @@ public class Main extends Application {
 		reset.setOnAction(e -> reset());
 		setLightDirection.setOnAction(e -> changeLight());
 		changeMaterial.setOnAction(e -> changeMaterial());
+		changeLightingModel.setOnAction(e -> changeLighthing());
 	}
 	
 	private void reset() {
@@ -210,6 +213,15 @@ public class Main extends Application {
 		this.draw();
 	}
 	
+	private void changeLighthing() {
+		String text = changeLightingModel.getText();
+		if(text == "Change to Phong")
+			changeLightingModel.setText("Change to Blin-Phong");
+		else
+			changeLightingModel.setText("Change to Phong");
+		draw();
+	}
+	
 	private void changeMaterial() {
 		material.setKa(getDouble(this.ka));
 		material.setKd(getDouble(this.kd));
@@ -222,7 +234,6 @@ public class Main extends Application {
 	}
 	
 	private void draw() {
-		System.out.println(transformatioMatrix);
 		IndexedFace actualFaces = Transformator.transform(loadedFaces, transformatioMatrix);
 		
 		MyVec[] vecs = getVecsArray(actualFaces);
@@ -276,6 +287,14 @@ public class Main extends Application {
 	}
 	
 	private double getLight(int[] face, MyVec[] vecs) {
+		String text = changeLightingModel.getText();
+		if(text == "Change to Phong")
+			return getPhong(face, vecs);
+		else
+			return getBlinPhong(face, vecs);
+	}
+	
+	private double getBlinPhong(int[] face, MyVec[] vecs) {
 		MyVec normal = getNormal(face, vecs);
 		double I_diffuse = normal.dot(light);
 		if(VIEW.plus(light).length() == 0) {
@@ -283,6 +302,16 @@ public class Main extends Application {
 		}
 		MyVec half = VIEW.plus(light).divide(VIEW.plus(light).length());
 		double I_specular = Math.pow(half.dot(normal), material.getShininess());
+		if(I_diffuse < 0) I_diffuse = 0;
+		if(I_specular < 0) I_specular = 0;
+		return material.getKd() * I_diffuse + material.getKs() * I_specular;
+	}
+	
+	private double getPhong(int[] face, MyVec[] vecs) {
+		MyVec normal = getNormal(face, vecs);
+		double I_diffuse = normal.dot(light);
+		MyVec reflected = normal.multiply(2*(light.dot(normal))).minus(light); //reflected?
+		double I_specular = Math.pow(reflected.dot(normal), material.getShininess());
 		if(I_diffuse < 0) I_diffuse = 0;
 		if(I_specular < 0) I_specular = 0;
 		return material.getKd() * I_diffuse + material.getKs() * I_specular;

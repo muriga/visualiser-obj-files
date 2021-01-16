@@ -78,6 +78,23 @@ public class MyVec {
 				0);
 	}
 	
+	public MyVec multiply(MyVec otherVec) {
+		double [] a = this.getVector();
+		double [] b = otherVec.getVector();
+		return new MyVec(a[0] * b[0],
+				a[1] * b[1],
+				a[2] * b[2],
+				0);
+	}
+	
+	public MyVec multiply(double scalar) {
+		double [] a = this.getVector();
+		return new MyVec(a[0] * scalar,
+				a[1] * scalar,
+				a[2] * scalar,
+				0);
+	}
+	
 	public double getX() {
 		return x;
 	}
