@@ -38,6 +38,9 @@ public class Main extends Application {
 	private final TextField scalingVal = new TextField();
 	private final double LINE_WIDTH = 1.0;
 	private final MyVec VIEW = new MyVec(0,0,-1,0);
+	private final double RED = 0.1;
+	private final double GREEN = 0.1;
+	private final double BLUE = 0.7;
 	
 	private IndexedFace loadedFaces;
 	private Canvas canvas;
@@ -193,8 +196,9 @@ public class Main extends Application {
 		y_coordinates[0] = vecs[face[FIRST]].getY();
 		y_coordinates[1] = vecs[face[SECOND]].getY();
 		y_coordinates[2] = vecs[face[THIRD]].getY();
-		
-		context.setFill(Color.BLUE);
+		double I = 0.4;
+		Color color = Color.hsb(240, 1, I);
+		context.setFill(color);
         context.fillPolygon(x_coordinates, y_coordinates, 3);
 	}
 	
