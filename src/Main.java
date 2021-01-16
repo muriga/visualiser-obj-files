@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
@@ -40,17 +41,24 @@ public class Main extends Application {
 	private final TextField scalingVal = new TextField();
 	private final TextField[] lightDirectionVal = new TextField[3];
 	private final Button setLightDirection = new Button("Set Light Direction");
+	private final TextField ka = new TextField();
+	private final TextField kd = new TextField();
+	private final TextField ks = new TextField();
+	private final TextField shininess = new TextField();
+	private final Label colorLabel = new Label("R,G,B:");
+	private final TextField color_R = new TextField();
+	private final TextField color_G = new TextField();
+	private final TextField color_B = new TextField();
+	private final Button changeMaterial = new Button("Change material");
 	private final double LINE_WIDTH = 1.0;
 	private final MyVec VIEW = new MyVec(0,0,-1,0);
-	private final double RED = 0.1;
-	private final double GREEN = 0.1;
-	private final double BLUE = 0.7;
 	
 	private IndexedFace loadedFaces;
 	private Canvas canvas;
 	private GraphicsContext graphicContext;
 	private MyMatrix transformatioMatrix;
 	private MyVec light = new MyVec(0,0,-1,0);
+	private Material material = new Material();
 	
 	@Override
 	public void start(Stage mainStage) {
@@ -98,6 +106,13 @@ public class Main extends Application {
 			rotationVal[i].setMaxWidth(TEXTFIELD_WIDTH);
 			lightDirectionVal[i].setMaxWidth(TEXTFIELD_WIDTH);
 		}
+		ka.setMaxWidth(TEXTFIELD_WIDTH);
+		ks.setMaxWidth(TEXTFIELD_WIDTH);
+		kd.setMaxWidth(TEXTFIELD_WIDTH);
+		shininess.setMaxWidth(TEXTFIELD_WIDTH);
+		color_R.setMaxWidth(TEXTFIELD_WIDTH);
+		color_G.setMaxWidth(TEXTFIELD_WIDTH);
+		color_B.setMaxWidth(TEXTFIELD_WIDTH);
 	}
 	
 	private FlowPane intitializePane() {
@@ -112,6 +127,7 @@ public class Main extends Application {
 		addRotationComponents(paneChildren);
 		addScalingComponents(paneChildren);
 		addLightingComponents(paneChildren);
+		addMaterialComponents(paneChildren);
 	}
 	
 	private void addBasicFunctionality(ObservableList<Node> paneChildren) {
@@ -146,6 +162,18 @@ public class Main extends Application {
 		}
 		paneChildren.add(setLightDirection);
 	}
+	
+	private void addMaterialComponents(ObservableList<Node> paneChildren) {
+		paneChildren.add(ka);
+		paneChildren.add(kd);
+		paneChildren.add(ks);
+		paneChildren.add(shininess);
+		paneChildren.add(colorLabel);
+		paneChildren.add(color_R);
+		paneChildren.add(color_G);
+		paneChildren.add(color_B);
+		paneChildren.add(changeMaterial);
+	}
 
 	private void setButtons() {
 		translateButton.setOnAction(e -> translate());
@@ -154,6 +182,7 @@ public class Main extends Application {
 		load.setOnAction(e -> load());
 		reset.setOnAction(e -> reset());
 		setLightDirection.setOnAction(e -> changeLight());
+		changeMaterial.setOnAction(e -> changeMaterial());
 	}
 	
 	private void reset() {
@@ -178,6 +207,17 @@ public class Main extends Application {
 		double toY = getDouble(this.lightDirectionVal[AXIS_Y]);
 		double toZ = getDouble(this.lightDirectionVal[AXIS_Z]); 
 		light = new MyVec(toX, toY, toZ, 0);
+		this.draw();
+	}
+	
+	private void changeMaterial() {
+		material.setKa(getDouble(this.ka));
+		material.setKd(getDouble(this.kd));
+		material.setKs(getDouble(this.ks));
+		material.setShininess(getDouble(this.shininess));
+		material.setColor_R(getDouble(this.color_R));
+		material.setColor_G(getDouble(this.color_G));
+		material.setColor_B(getDouble(this.color_B));
 		this.draw();
 	}
 	
@@ -224,26 +264,28 @@ public class Main extends Application {
 		y_coordinates[0] = vecs[face[FIRST]].getY();
 		y_coordinates[1] = vecs[face[SECOND]].getY();
 		y_coordinates[2] = vecs[face[THIRD]].getY();
-		double ambient_reflection = 0.8;
 		double ambient_I = 0.5;
-		double I = ambient_reflection * ambient_I + getLight(face, vecs);
-		if(I > 1) I = 1;
-		Color color = new Color(0.0,0.0,0.75*I,1);
+		double I = material.getKa() * ambient_I + getLight(face, vecs);
+		if(I > 1) {
+			I = 1;
+		}
+		Color color = new Color(material.getColor_R() * I, material.getColor_G() * I,
+				material.getColor_B() * I,1);
 		context.setFill(color);
         context.fillPolygon(x_coordinates, y_coordinates, 3);
 	}
 	
 	private double getLight(int[] face, MyVec[] vecs) {
-		double diffus_reflection = 2.7;
-		double specular_reflection = 1.5;
-		double shininess = 1;
 		MyVec normal = getNormal(face, vecs);
 		double I_diffuse = normal.dot(light);
+		if(VIEW.plus(light).length() == 0) {
+			return 0;
+		}
 		MyVec half = VIEW.plus(light).divide(VIEW.plus(light).length());
-		double I_specular = Math.pow(half.dot(normal), shininess);
+		double I_specular = Math.pow(half.dot(normal), material.getShininess());
 		if(I_diffuse < 0) I_diffuse = 0;
 		if(I_specular < 0) I_specular = 0;
-		return diffus_reflection * I_diffuse + specular_reflection * I_specular;
+		return material.getKd() * I_diffuse + material.getKs() * I_specular;
 	}
 	
 	private void translate() {
