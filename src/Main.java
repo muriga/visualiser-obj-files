@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 /**
@@ -160,13 +161,11 @@ public class Main extends Application {
 		MyVec[] vecs = getVecsArray(actualFaces);
 		int actualFaceIndicesAmount = actualFaces.getIndices().size();
 		
-		graphicContext.beginPath();
 		graphicContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		for(int i=0;i<actualFaceIndicesAmount;i++) {
 			int[] face = actualFaces.getIndices().get(i);
 			if(isVisible(face, vecs)) {
-				drawTriangel(face, vecs);
-				graphicContext.stroke();
+				drawTriangel(graphicContext, face, vecs);
 			}
 		}
 	}
@@ -185,14 +184,18 @@ public class Main extends Application {
 		return false;
 	}
 	
-	private void drawTriangel(int[] face, MyVec[] vecs) {
-		MyVec firstNode = vecs[face[FIRST]];
-		MyVec secondNode = vecs[face[SECOND]];
-		MyVec thirdNode = vecs[face[THIRD]];
-		graphicContext.moveTo(firstNode.getX(), firstNode.getY());
-		graphicContext.lineTo(secondNode.getX(), secondNode.getY());
-		graphicContext.lineTo(thirdNode.getX(), thirdNode.getY());
-		graphicContext.lineTo(firstNode.getX(), firstNode.getY());
+	private void drawTriangel(GraphicsContext context, int[] face, MyVec[] vecs) {
+		double[] x_coordinates = new double[3];
+		double[] y_coordinates = new double[3];
+		x_coordinates[0] = vecs[face[FIRST]].getX();
+		x_coordinates[1] = vecs[face[SECOND]].getX();
+		x_coordinates[2] = vecs[face[THIRD]].getX();
+		y_coordinates[0] = vecs[face[FIRST]].getY();
+		y_coordinates[1] = vecs[face[SECOND]].getY();
+		y_coordinates[2] = vecs[face[THIRD]].getY();
+		
+		context.setFill(Color.BLUE);
+        context.fillPolygon(x_coordinates, y_coordinates, 3);
 	}
 	
 	private void translate() {
