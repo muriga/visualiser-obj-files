@@ -56,6 +56,15 @@ public class MyVec {
 				0);
 	}
 	
+	public MyVec plus(MyVec otherVec) {
+		double [] a = this.getVector();
+		double [] b = otherVec.getVector();
+		return new MyVec(a[0] + b[0],
+				a[1] + b[1],
+				a[2] + b[2],
+				0);
+	}
+	
 	public double getX() {
 		return x;
 	}
