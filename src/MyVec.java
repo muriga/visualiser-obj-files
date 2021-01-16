@@ -56,6 +56,19 @@ public class MyVec {
 				0);
 	}
 	
+	public double length() {
+		double[] a = this.getVector();
+		return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+	}
+	
+	public MyVec divide(double divisor) {
+		double[] a = this.getVector();
+		return new MyVec(a[0] / divisor,
+				a[1] / divisor,
+				a[2] / divisor,
+				a[3]);
+	}
+	
 	public MyVec plus(MyVec otherVec) {
 		double [] a = this.getVector();
 		double [] b = otherVec.getVector();

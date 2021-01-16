@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-simple-0.40-sources.jar"/>
 	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-zdense-0.40.jar"/>
 	<classpathentry kind="lib" path="D:/Program Files (x86)/Java/ejml-v0.40-libs/ejml-zdense-0.40-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

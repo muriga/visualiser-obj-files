@@ -1,3 +1,5 @@
+import com.sun.glass.ui.View;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -36,6 +38,8 @@ public class Main extends Application {
 	private final TextField[] translationVal = new TextField[3];
 	private final TextField[] rotationVal = new TextField[3];
 	private final TextField scalingVal = new TextField();
+	private final TextField[] lightDirectionVal = new TextField[3];
+	private final Button setLightDirection = new Button("Set Light Direction");
 	private final double LINE_WIDTH = 1.0;
 	private final MyVec VIEW = new MyVec(0,0,-1,0);
 	private final double RED = 0.1;
@@ -46,6 +50,7 @@ public class Main extends Application {
 	private Canvas canvas;
 	private GraphicsContext graphicContext;
 	private MyMatrix transformatioMatrix;
+	private MyVec light = new MyVec(0,0,-1,0);
 	
 	@Override
 	public void start(Stage mainStage) {
@@ -88,8 +93,10 @@ public class Main extends Application {
 		for(int i=0; i < 3;i++) {
 			translationVal[i] = new TextField();
 			rotationVal[i] = new TextField();
+			lightDirectionVal[i] = new TextField();
 			translationVal[i].setMaxWidth(TEXTFIELD_WIDTH);
 			rotationVal[i].setMaxWidth(TEXTFIELD_WIDTH);
+			lightDirectionVal[i].setMaxWidth(TEXTFIELD_WIDTH);
 		}
 	}
 	
@@ -104,6 +111,7 @@ public class Main extends Application {
 		addTranslationCompononents(paneChildren);
 		addRotationComponents(paneChildren);
 		addScalingComponents(paneChildren);
+		addLightingComponents(paneChildren);
 	}
 	
 	private void addBasicFunctionality(ObservableList<Node> paneChildren) {
@@ -131,6 +139,13 @@ public class Main extends Application {
 		paneChildren.add(scalingVal);
 		paneChildren.add(scaleButton);
 	}
+	
+	private void addLightingComponents(ObservableList<Node> paneChildren) {
+		for(int i=0; i < 3;i++) {
+			paneChildren.add(lightDirectionVal[i]);
+		}
+		paneChildren.add(setLightDirection);
+	}
 
 	private void setButtons() {
 		translateButton.setOnAction(e -> translate());
@@ -138,6 +153,7 @@ public class Main extends Application {
 		scaleButton.setOnAction(e -> scale());
 		load.setOnAction(e -> load());
 		reset.setOnAction(e -> reset());
+		setLightDirection.setOnAction(e -> changeLight());
 	}
 	
 	private void reset() {
@@ -155,6 +171,14 @@ public class Main extends Application {
 	private void loadOBJ() {
 		String filePath = PATH + file.getText();
 		loadedFaces = Loader.readObj(filePath);
+	}
+	
+	private void changeLight() {
+		double toX = getDouble(this.lightDirectionVal[AXIS_X]);
+		double toY = getDouble(this.lightDirectionVal[AXIS_Y]);
+		double toZ = getDouble(this.lightDirectionVal[AXIS_Z]); 
+		light = new MyVec(toX, toY, toZ, 0);
+		this.draw();
 	}
 	
 	private void draw() {
@@ -179,12 +203,16 @@ public class Main extends Application {
 	}
 	
 	private boolean isVisible(int[] face, MyVec[] vecs) {
-		MyVec v0 = vecs[face[SECOND]].minus(vecs[face[FIRST]]);
-		MyVec v1 = vecs[face[THIRD]].minus(vecs[face[SECOND]]);
-		MyVec normal = v0.cross(v1);
+		MyVec normal = getNormal(face, vecs);
 		if(VIEW.dot(normal) > 0)
 				return true;
 		return false;
+	}
+	
+	private MyVec getNormal(int[] face, MyVec[] vecs) {
+		MyVec v0 = vecs[face[SECOND]].minus(vecs[face[FIRST]]).divide(200);
+		MyVec v1 = vecs[face[THIRD]].minus(vecs[face[SECOND]]).divide(200);
+		return v0.cross(v1);
 	}
 	
 	private void drawTriangel(GraphicsContext context, int[] face, MyVec[] vecs) {
@@ -196,10 +224,26 @@ public class Main extends Application {
 		y_coordinates[0] = vecs[face[FIRST]].getY();
 		y_coordinates[1] = vecs[face[SECOND]].getY();
 		y_coordinates[2] = vecs[face[THIRD]].getY();
-		double I = 0.4;
-		Color color = Color.hsb(240, 1, I);
+		double ambient_reflection = 0.8;
+		double ambient_I = 0.5;
+		double I = ambient_reflection * ambient_I + getLight(face, vecs);
+		if(I > 1) I = 1;
+		Color color = new Color(0.0,0.0,0.75*I,1);
 		context.setFill(color);
         context.fillPolygon(x_coordinates, y_coordinates, 3);
+	}
+	
+	private double getLight(int[] face, MyVec[] vecs) {
+		double diffus_reflection = 2.7;
+		double specular_reflection = 1.5;
+		double shininess = 1;
+		MyVec normal = getNormal(face, vecs);
+		double I_diffuse = normal.dot(light);
+		MyVec half = VIEW.plus(light).divide(VIEW.plus(light).length());
+		double I_specular = Math.pow(half.dot(normal), shininess);
+		if(I_diffuse < 0) I_diffuse = 0;
+		if(I_specular < 0) I_specular = 0;
+		return diffus_reflection * I_diffuse + specular_reflection * I_specular;
 	}
 	
 	private void translate() {
